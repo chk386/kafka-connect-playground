@@ -34,7 +34,7 @@ RUN addgroup --gid "$GID" "$USER" \
 # RUN wget https://services.gradle.org/distributions/${GRADLE}-bin.zip -P /opt \
 #     && mkdir -p /opt/gradle \
 #     && unzip -d /opt/gradle /opt/${GRADLE}-bin.zip \
-#     && rm -f *.zip
+#     && rm -f ~/${GRADLE}-bin.zip 
 # ENV PATH="$PATH:/opt/gradle/${GRADLE}/bin"
 
 USER $USER
