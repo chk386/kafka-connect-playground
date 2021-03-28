@@ -1,7 +1,9 @@
+# https://github.com/confluentinc/cp-all-in-one/blob/6.1.1-post/cp-all-in-one/docker-compose.yml
+
 version: '3.9'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.3.1
+    image: confluentinc/cp-zookeeper:6.1.1
     hostname: zookeeper
     container_name: zookeeper
     ports:
@@ -12,9 +14,11 @@ services:
     volumes:
       - ~/docker/zookeeper/data:/var/lib/zookeeper/data
       - ~/docker/zookeeper/log:/var/lib/zookeeper/log
+    # networks:
+    #   - kafka_playground
 
   kafka:
-    image: confluentinc/cp-enterprise-kafka:5.3.1
+    image: confluentinc/cp-server:6.1.1
     hostname: kafka
     container_name: kafka
     depends_on:
@@ -36,6 +40,7 @@ services:
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8085
     volumes:
       - ~/docker/kafka/data:/var/lib/kafka/data
 
@@ -49,9 +54,12 @@ services:
       - "8081:8080"
     restart: always
     environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
-      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: schema-registry:8085
+      # KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: first
+      # KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect0:8083
 
   zk-ui:
     image: elkozmon/zoonavigator:latest
@@ -66,3 +74,7 @@ services:
       HTTP_PORT: 8080
       CONNECTION_LOCALZK_NAME: Local zookeeper
       CONNECTION_LOCALZK_CONN: zookeeper:2181
+
+networks: 
+  default:
+    name: kafka_playground
