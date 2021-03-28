@@ -40,12 +40,7 @@ Schema Evolution : 상,하위 호환성을 유지하면서 스키마 변경이 �
 
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbSXeAE%2FbtqDIobE5p4%2F41zIKdECX5K1QKOz77Hjo0%2Fimg.png" width="50%"/><br/><br/>
 
-스키마 설계시 고려사항
 
-- 삭제될수 있는 필드 -> default value
-- 추가 필드 -> default value
-- Enum 은 변경될 가능성이 없는 경우
-- 필드 name 변경 불가 정책(오직 추가, 삭제)
 
 ### network resources
 
@@ -80,15 +75,34 @@ Control Center : web ui를 제공하며 topic schema를 등록, 수정, 조회 �
 
 ## 참고 url
 
-[restful API](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)
-[opensource web ui](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)
-[schema-registry.properties](https://docs.confluent.io/platform/current/schema-registry/installation/config.html)
+[restful API](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)  
+
+[opensource web ui](https://docs.confluent.io/platform/current/schema-registry/develop/api.html)  
+
+[schema-registry.properties](https://docs.confluent.io/platform/current/schema-registry/installation/config.html)  
 
 ## 설치
+
 docker-compose up
 
+## 스키마 설계
+
+https://toolslick.com/generation/metadata/avro-schema-from-json
+
+스키마 설계시 고려사항
+
+- 삭제될수 있는 필드 -> default value
+- 추가 필드 -> default value
+- Enum 은 변경될 가능성이 없는 경우
+- 필드 name 변경 불가 정책(오직 추가, 삭제)
 
 
+
+참고하자
+https://medium.com/@gaemi/kafka-%EC%99%80-confluent-schema-registry-%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%9C-%EC%8A%A4%ED%82%A4%EB%A7%88-%EA%B4%80%EB%A6%AC-2-bfa96622a974
+
+
+https://github.com/davidmc24/gradle-avro-plugin
 
 
 
