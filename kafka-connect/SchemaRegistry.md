@@ -24,6 +24,7 @@ JSON일 경우는 메세지의 항목이 변경되어도 objectMapper와 같은 
 Schema Evolution : 상,하위 호환성을 유지하면서 스키마 변경이 가능. 상위 호환성은 이전 어플리케이션이 새로운 메세지를 읽을 수 있고 하위 호환성은 새로운 어플리케이션이 이전 메세지를 읽을 수 있는것을 의미한다.
 <br/><br/>
 
+---
 스키마 호환성은 크게 4가지이며
 
 - Backward
@@ -38,9 +39,8 @@ Schema Evolution : 상,하위 호환성을 유지하면서 스키마 변경이 �
 - None
   - 호환성 체크를 하지 않음
 
-<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbSXeAE%2FbtqDIobE5p4%2F41zIKdECX5K1QKOz77Hjo0%2Fimg.png" width="50%"/><br/><br/>
-
-
+---
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbSXeAE%2FbtqDIobE5p4%2F41zIKdECX5K1QKOz77Hjo0%2Fimg.png" width="50%"/>  
 
 ### network resources
 
@@ -96,9 +96,7 @@ https://toolslick.com/generation/metadata/avro-schema-from-json
 - Enum 은 변경될 가능성이 없는 경우
 - 필드 name 변경 불가 정책(오직 추가, 삭제)
 
-
-
-참고하자
+> 참고하자
 https://medium.com/@gaemi/kafka-%EC%99%80-confluent-schema-registry-%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%9C-%EC%8A%A4%ED%82%A4%EB%A7%88-%EA%B4%80%EB%A6%AC-2-bfa96622a974
 
 
@@ -109,7 +107,7 @@ https://github.com/davidmc24/gradle-avro-plugin
 
 
 
-
+curl -X GET http://localhost:8084/subjects
 
 
 *****수정 ****
