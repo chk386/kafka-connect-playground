@@ -11,11 +11,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    volumes:
-      - ~/docker/zookeeper/data:/var/lib/zookeeper/data
-      - ~/docker/zookeeper/log:/var/lib/zookeeper/log
-    # networks:
-    #   - kafka_playground
+    # volumes:
+    #   - ~/docker/zookeeper/data:/var/lib/zookeeper/data
+    #   - ~/docker/zookeeper/log:/var/lib/zookeeper/log
 
   kafka:
     image: confluentinc/cp-server:6.1.1
@@ -24,8 +22,9 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "29092:29092"
       - "9092:9092"
+      - "9101:9101"
+    restart: always
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
@@ -34,15 +33,36 @@ services:
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8085
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:29092
-      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8085
-    volumes:
-      - ~/docker/kafka/data:/var/lib/kafka/data
+    # volumes:
+    #   - ~/docker/kafka/data:/var/lib/kafka/data
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:6.1.1
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on: 
+      - kafka
+    restart: always
+    environment:
+      # SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka:29092"
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: "GET,POST,PUT,OPTIONS"
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: "*"
+    ports:
+      - "8084:8085"
 
   kafka-ui:
     image: provectuslabs/kafka-ui
@@ -58,8 +78,8 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: schema-registry:8085
-      # KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: first
-      # KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect0:8083
+  #     # KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: first
+  #     # KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect0:8083
 
   zk-ui:
     image: elkozmon/zoonavigator:latest
@@ -75,6 +95,17 @@ services:
       CONNECTION_LOCALZK_NAME: Local zookeeper
       CONNECTION_LOCALZK_CONN: zookeeper:2181
 
+  schema-registry-ui:
+    image: landoop/schema-registry-ui
+    hostname: schema-ui
+    container_name: schema-ui
+    depends_on: 
+      - schema-registry
+    environment: 
+      SCHEMAREGISTRY_URL: "http://localhost:8084"
+    ports:
+      - 8083:8000 
+  
 networks: 
   default:
     name: kafka_playground
