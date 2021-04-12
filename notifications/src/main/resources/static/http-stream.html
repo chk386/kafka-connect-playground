@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications</title>
+</head>
+<body>
+<label for="msg"></label>
+<textarea id="msg" style="border: dashed red; height: 500px; width: 500px;">
+서버 응댑 대기중
+</textarea>
+</body>
+</html>
+
+<script type="text/javascript">
+    (() => {
+        let es = new EventSource("http://localhost:9090/notifications");
+        let $msg = document.querySelector("#msg");
+
+        es.onopen = (ev => {
+            $msg.textContent = "서버 접속 완료";
+        })
+
+        es.onmessage = (msg => {
+            $msg.textContent += `\n${msg.data}`;
+
+            if(msg.data === "3") {
+                $msg.textContent += "\n끝";
+                es.close();
+            }
+        });
+    })();
+</script>

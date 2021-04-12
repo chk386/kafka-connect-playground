@@ -15,6 +15,11 @@ services:
     #   - ~/docker/zookeeper/data:/var/lib/zookeeper/data
     #   - ~/docker/zookeeper/log:/var/lib/zookeeper/log
 
+  # /bin/kafka-topics --create --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+  # /bin/kafka-topics --describe --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+  # /bin/kafka-console-producer --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+  # /bin/kafka-console-consumer --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+  # /bin/kafka-topics --delete --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
   kafka:
     image: confluentinc/cp-server:6.1.1
     hostname: kafka
@@ -62,12 +67,42 @@ services:
       SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: "GET,POST,PUT,OPTIONS"
       SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: "*"
     ports:
-      - "8084:8085"
+        - "8084:8085"
+
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:6.1.1
+    depends_on:
+      - kafka
+      - schema-registry
+    ports:
+      - 8086:8082
+    hostname: rest-proxy
+    container_name: rest-proxy
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: "kafka:29092"
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8085'
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: "GET,POST,PUT,OPTIONS"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: "*"
+
+#  kafka-topics-ui:
+#    image: landoop/kafka-topics-ui
+#    depends_on:
+#      - kafka
+#      - rest-proxy
+#    ports:
+#      - 8085:8000
+#    hostname: kafka-topics-ui
+#    container_name: kafka-topics-ui
+#    environment:
+#      KAFKA_REST_PROXY_URL: http://rest-proxy:8082
+#      PROXY: "true"
 
   kafka-ui:
     image: provectuslabs/kafka-ui
     container_name: kafka-ui
-    depends_on: 
+    depends_on:
       - zookeeper
       - kafka
     ports:
@@ -81,30 +116,30 @@ services:
   #     # KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: first
   #     # KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect0:8083
 
-  zk-ui:
-    image: elkozmon/zoonavigator:latest
-    hostname: zk-ui
-    container_name: zk-ui
-    depends_on: 
-      - zookeeper
-    ports: 
-      - "8082:8080"
-    restart: always
-    environment:
-      HTTP_PORT: 8080
-      CONNECTION_LOCALZK_NAME: Local zookeeper
-      CONNECTION_LOCALZK_CONN: zookeeper:2181
-
-  schema-registry-ui:
-    image: landoop/schema-registry-ui
-    hostname: schema-ui
-    container_name: schema-ui
-    depends_on: 
-      - schema-registry
-    environment: 
-      SCHEMAREGISTRY_URL: "http://localhost:8084"
-    ports:
-      - 8083:8000 
+#  zk-ui:
+#    image: elkozmon/zoonavigator:latest
+#    hostname: zk-ui
+#    container_name: zk-ui
+#    depends_on:
+#      - zookeeper
+#    ports:
+#      - "8082:8080"
+#    restart: always
+#    environment:
+#      HTTP_PORT: 8080
+#      CONNECTION_LOCALZK_NAME: Local zookeeper
+#      CONNECTION_LOCALZK_CONN: zookeeper:2181
+#
+#  schema-registry-ui:
+#    image: landoop/schema-registry-ui
+#    hostname: schema-ui
+#    container_name: schema-ui
+#    depends_on:
+#      - schema-registry
+#    environment:
+#      SCHEMAREGISTRY_URL: "http://localhost:8084"
+#    ports:
+#      - 8083:8000
   
 networks: 
   default:
