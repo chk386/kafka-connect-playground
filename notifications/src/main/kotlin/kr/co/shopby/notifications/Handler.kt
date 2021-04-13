@@ -7,22 +7,32 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.bodyAndAwait
-import reactor.core.publisher.Flux
-import reactor.kotlin.core.publisher.toFlux
-import java.time.Duration
+import reactor.core.publisher.Sinks
 
 @Component
-class Handler(private val producer: ReactiveKafkaProducerTemplate<String, String>) {
+class Handler(
+  private val producer: ReactiveKafkaProducerTemplate<String, String>,
+  private val multicaster: Sinks.Many<String>
+) {
   suspend fun httpStream(request: ServerRequest): ServerResponse {
+    return ServerResponse
+      .ok()
+      .contentType(MediaType.TEXT_EVENT_STREAM)
+      .bodyAndAwait(multicaster
+        .asFlux()
+        .filter { it.contains("all:") || it.startsWith(request.queryParam("id").orElseThrow()) }
+        .asFlow()
+      )
+  }
 
-    val publisher = Flux.range(1, 3).delayElements(Duration.ofSeconds(1))
-      .flatMap {
-         producer.send("BACKOFFICE-NOTIFICATIONS", it.toString())
-           .toFlux()
-          .flatMap { _ -> Flux.just(it) }
-      }
+  suspend fun produce(request: ServerRequest): ServerResponse {
+    val queryParam = request.queryParam("msg").orElseThrow();
 
-    return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
-      .bodyAndAwait(publisher.asFlow())
+    return ServerResponse
+      .ok()
+      .bodyAndAwait(producer.send(Topic.NOTIFICATIONS, queryParam)
+        .map { it.recordMetadata().offset().toString() }
+        .asFlow()
+      )
   }
 }

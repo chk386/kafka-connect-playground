@@ -4,29 +4,79 @@
     <meta charset="UTF-8">
     <title>Notifications</title>
 </head>
+<style>
+    #left {
+        float: left;
+        width: 300px;
+        height: 500px;
+        background-color: #f5f4df;
+    }
+
+    #right {
+        display: inline-block;
+        width: 250px;
+        height: 100px;
+        background-color: #f3d2d2;
+        margin-left: 10px;
+    }
+
+    input {
+        width: 220px;
+    }
+</style>
 <body>
-<label for="msg"></label>
-<textarea id="msg" style="border: dashed red; height: 500px; width: 500px;">
-서버 응댑 대기중
-</textarea>
+<div id="left">
+    <label for="msg">Server Sent Event</label>
+    <textarea id="msg" style="height: 90%; width: 90%; ">
+
+    </textarea>
+</div>
+<div id="right">
+    <label for="input">producer전송</label>
+    <input type="text" id="input" placeholder="입력후 엔터!"/><br/><br/>
+    <label for="all">전체전송여부</label><input type="checkbox" id="all" checked/>
+</div>
 </body>
 </html>
 
+<script type="text/javascript" src="http://jsgetip.appspot.com"></script>
+
 <script type="text/javascript">
+    const $input = document.querySelector("#input");
+    const $msg = document.querySelector("#msg");
+    const $checked = document.querySelector("#all");
+
     (() => {
-        let es = new EventSource("http://localhost:9090/notifications");
-        let $msg = document.querySelector("#msg");
+        const isChrome = navigator.userAgent.includes("Chrome");
+        const id = `${ip()}@${isChrome ? "Chrome" : "Safari"}`;
+        if(!isChrome) {
+            document.querySelector("#right").setAttribute("style", "background-color: #67d8f3;")
+        }
 
-        es.onopen = (ev => {
-            $msg.textContent = "서버 접속 완료";
+        // Server Sent Events
+        const es = new EventSource(`http://localhost:9090/notifications?id=${id}`);
+        es.onopen = (_ => {
+            $msg.textContent = "서버 전송 시작";
         })
-
         es.onmessage = (msg => {
-            $msg.textContent += `\n${msg.data}`;
 
-            if(msg.data === "3") {
+            $msg.textContent += `\n${msg.data}`;
+            if (msg.data === "3") {
                 $msg.textContent += "\n끝";
                 es.close();
+            }
+        });
+
+        // 메세지 전송
+        $input.addEventListener("keypress", (e) => {
+            const msg = ($checked.checked) ? e.target.value : `${id}:${e.target.value}`;
+
+            if (e.key === 'Enter') {
+                fetch(`http://localhost:9090/produce?msg=${msg}`)
+                    .then((res) => {
+                        console.log(`result : ${res.ok}`)
+                        $input.value = ``;
+                    })
             }
         });
     })();

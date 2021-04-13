@@ -12,12 +12,13 @@ import org.springframework.web.reactive.function.server.coRouter
 
 @Configuration
 @EnableWebFlux
-class Router(private val hander: Handler): WebFluxConfigurer {
+class Router(private val handler: Handler): WebFluxConfigurer {
 
   @Bean
   fun coRoute(): RouterFunction<ServerResponse> {
     return coRouter {
-      GET("/notifications", hander::httpStream)
+      GET("/notifications", handler::httpStream)
+      GET("/produce", handler::produce)
     }
   }
 
@@ -25,7 +26,6 @@ class Router(private val hander: Handler): WebFluxConfigurer {
     registry.addMapping("/**")
       .allowedOrigins("*")
       .allowedMethods("GET", "POST", "PUT", "DELETE")
-//      .allowCredentials(true).maxAge(3600)
   }
 
   override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
