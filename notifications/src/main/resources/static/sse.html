@@ -24,6 +24,7 @@
         width: 220px;
     }
 </style>
+
 <body>
 <div id="left">
     <label for="msg">Server Sent Event</label>
@@ -37,7 +38,6 @@
     <label for="all">전체전송여부</label><input type="checkbox" id="all" checked/>
 </div>
 </body>
-</html>
 
 <script type="text/javascript" src="http://jsgetip.appspot.com"></script>
 
@@ -49,7 +49,7 @@
     (() => {
         const isChrome = navigator.userAgent.includes("Chrome");
         const id = `${ip()}@${isChrome ? "Chrome" : "Safari"}`;
-        if(!isChrome) {
+        if (!isChrome) {
             document.querySelector("#right").setAttribute("style", "background-color: #67d8f3;")
         }
 
@@ -81,3 +81,5 @@
         });
     })();
 </script>
+
+</html>

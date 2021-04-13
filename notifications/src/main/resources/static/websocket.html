@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Websocket</title>
+</head>
+
+<style>
+    #left {
+        width: 300px;
+        height: 500px;
+        background-color: #f5f4df;
+    }
+
+    #input {
+        width: 220px;
+    }
+</style>
+<body>
+
+<div id="left">
+    <div id="msg" style="height: 450px;"></div>
+
+    <div>
+        <label for="input">Send :</label>
+        <input id="input" type="text" placeholder="메세지를 입력하세요."/><br/>
+        <label for="all">전체전송여부</label>
+        <input type="checkbox" id="all" checked/>
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="http://jsgetip.appspot.com"></script>
+
+<script type="text/javascript">
+    const $msg = document.querySelector("#msg");
+    const $input = document.querySelector("#input");
+    const $checked = document.querySelector("#all");
+
+    (() => {
+        const isChrome = navigator.userAgent.includes("Chrome");
+        const id = `${ip()}@${isChrome ? "Chrome" : "Safari"}`;
+        const ws = new WebSocket(`ws://localhost:9090/ws?id=${id}`);
+
+        ws.onopen = (_) => {
+            insertBeforeEnd("소환사의 협곡에 오신걸 환영합니다.");
+        }
+
+        ws.onmessage = (msg) => {
+            insertBeforeEnd(msg.data);
+        }
+
+        ws.onclose = (_) => {
+            insertBeforeEnd("패배");
+        }
+
+        const insertBeforeEnd = function (txt) {
+            $msg.insertAdjacentHTML('beforeend', `${txt}<br/>`);
+        }
+
+        // 메세지 전송
+        $input.addEventListener("keypress", (e) => {
+            const msg = ($checked.checked) ? e.target.value : `${id}:${e.target.value}`;
+
+            if (e.key === 'Enter') {
+                if(e.target.value === "/항복") {
+                    ws.close();
+                }else {
+                    ws.send(msg);
+                }
+
+                $input.value = ``;
+            }
+        });
+    })();
+</script>
+
+</html>

@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.server.bodyAndAwait
 import reactor.core.publisher.Sinks
 
 @Component
-class Handler(
+class SseHandler(
   private val producer: ReactiveKafkaProducerTemplate<String, String>,
   private val multicaster: Sinks.Many<String>
 ) {
