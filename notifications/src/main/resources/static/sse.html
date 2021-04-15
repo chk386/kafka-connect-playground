@@ -54,12 +54,13 @@
         }
 
         // Server Sent Events
-        const es = new EventSource(`http://localhost:9090/notifications?id=${id}`);
+        const es = new EventSource(`/notifications?id=${id}`);
+
         es.onopen = (_ => {
             $msg.textContent = "서버 전송 시작";
         })
-        es.onmessage = (msg => {
 
+        es.onmessage = (msg => {
             $msg.textContent += `\n${msg.data}`;
             if (msg.data === "3") {
                 $msg.textContent += "\n끝";
@@ -69,10 +70,11 @@
 
         // 메세지 전송
         $input.addEventListener("keypress", (e) => {
-            const msg = ($checked.checked) ? e.target.value : `${id}:${e.target.value}`;
+            const target = ($checked.checked) ? `all` : `me`;
+            const msg = `${id}:${target}:${e.target.value}`
 
             if (e.key === 'Enter') {
-                fetch(`http://localhost:9090/produce?msg=${msg}`)
+                fetch(`/produce?msg=${msg}`)
                     .then((res) => {
                         console.log(`result : ${res.ok}`)
                         $input.value = ``;

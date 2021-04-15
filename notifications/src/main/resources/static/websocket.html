@@ -41,10 +41,10 @@
     (() => {
         const isChrome = navigator.userAgent.includes("Chrome");
         const id = `${ip()}@${isChrome ? "Chrome" : "Safari"}`;
-        const ws = new WebSocket(`ws://localhost:9090/ws?id=${id}`);
+        const ws = new WebSocket(`ws://${document.location.host}/ws?id=${id}`);
 
         ws.onopen = (_) => {
-            insertBeforeEnd("소환사의 협곡에 오신걸 환영합니다.");
+            insertBeforeEnd("서버 전송 시작");
         }
 
         ws.onmessage = (msg) => {
