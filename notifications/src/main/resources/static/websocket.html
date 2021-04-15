@@ -7,7 +7,7 @@
 
 <style>
     #left {
-        width: 300px;
+        width: 475px;
         height: 500px;
         background-color: #f5f4df;
     }
@@ -20,14 +20,12 @@
 
 <div id="left">
     <div id="msg" style="height: 450px;"></div>
-
-    <div>
+    <div style="background-color: chocolate">
         <label for="input">Send :</label>
         <input id="input" type="text" placeholder="메세지를 입력하세요."/><br/>
         <label for="all">전체전송여부</label>
         <input type="checkbox" id="all" checked/>
     </div>
-
 </div>
 </body>
 
@@ -44,11 +42,12 @@
         const ws = new WebSocket(`ws://${document.location.host}/ws?id=${id}`);
 
         ws.onopen = (_) => {
-            insertBeforeEnd("서버 전송 시작");
+            insertBeforeEnd("서버 전송 시작<br/>");
         }
 
         ws.onmessage = (msg) => {
-            insertBeforeEnd(msg.data);
+            const color = msg.data.includes(id) ? "#000000" : "#ff0000";
+            insertBeforeEnd(`<span style="color:${color};">${msg.data}</span><br/>`);
         }
 
         ws.onclose = (_) => {
@@ -56,7 +55,7 @@
         }
 
         const insertBeforeEnd = function (txt) {
-            $msg.insertAdjacentHTML('beforeend', `${txt}<br/>`);
+            $msg.insertAdjacentHTML('beforeend', `${txt}`);
         }
 
         // 메세지 전송

@@ -6,36 +6,25 @@
 </head>
 <style>
     #left {
-        float: left;
-        width: 300px;
+        width: 475px;
         height: 500px;
         background-color: #f5f4df;
     }
 
-    #right {
-        display: inline-block;
-        width: 250px;
-        height: 100px;
-        background-color: #f3d2d2;
-        margin-left: 10px;
-    }
-
-    input {
+    #input {
         width: 220px;
     }
 </style>
 
 <body>
 <div id="left">
-    <label for="msg">Server Sent Event</label>
-    <textarea id="msg" style="height: 90%; width: 90%; ">
-
-    </textarea>
-</div>
-<div id="right">
-    <label for="input">producer전송</label>
-    <input type="text" id="input" placeholder="입력후 엔터!"/><br/><br/>
-    <label for="all">전체전송여부</label><input type="checkbox" id="all" checked/>
+    <div id="msg" style="height: 450px;"></div>
+    <div style="background-color: chocolate">
+        <label for="input">Send :</label>
+        <input id="input" type="text" placeholder="메세지를 입력하세요."/><br/>
+        <label for="all">전체전송여부</label>
+        <input type="checkbox" id="all" checked/>
+    </div>
 </div>
 </body>
 
@@ -50,23 +39,28 @@
         const isChrome = navigator.userAgent.includes("Chrome");
         const id = `${ip()}@${isChrome ? "Chrome" : "Safari"}`;
         if (!isChrome) {
-            document.querySelector("#right").setAttribute("style", "background-color: #67d8f3;")
+            document.querySelector("#input").parentElement.setAttribute("style", "background-color: #67d8f3;")
         }
 
         // Server Sent Events
         const es = new EventSource(`/notifications?id=${id}`);
 
         es.onopen = (_ => {
-            $msg.textContent = "서버 전송 시작";
+            insertBeforeEnd("서버 전송 시작<br/>");
         })
 
         es.onmessage = (msg => {
-            $msg.textContent += `\n${msg.data}`;
-            if (msg.data === "3") {
-                $msg.textContent += "\n끝";
+            const color = msg.data.includes(id) ? "#000000" : "#ff0000";
+            insertBeforeEnd(`<span style="color:${color};">${msg.data}</span><br/>`);
+
+            if(msg.data === "패배") {
                 es.close();
             }
         });
+
+        const insertBeforeEnd = function (txt) {
+            $msg.insertAdjacentHTML('beforeend', txt);
+        }
 
         // 메세지 전송
         $input.addEventListener("keypress", (e) => {
