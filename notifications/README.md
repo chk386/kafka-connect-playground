@@ -1,3 +1,6 @@
+# github
+https://github.com/chk386/kafka-connect-playground/tree/main/notifications
+
 # 배경
 최근 엑셀다운로드 기능이 sync에서 async로 변경되었다.
 이로 인해 서버는 안정을 찾았고 우리는 편해졌으나 고객은 다운로드 완료시점을 알지 못하여 불편해졌다.
@@ -198,5 +201,54 @@ The Sinks categories are:
 
 ## 시스템 구성
 ![구성도](./diagram.png)
+
+## 코드 설명
+### local
+1. git clone https://github.com/chk386/notification
+1. docker-compose up
+    1. localhost:8081 : kafka UI
+    1. localhost:9092 : broker
+    1. localhost:2181 : zookeeper
+1. gradle boot run (또는 idea에서 NotificationsApplication.kt 실행
+
+### nhn cloud
+1. dockerizing
+```shell
+gradle bootBuildImage --imageName=shopby-notification
+docker login # docker hub 계정입력
+docker tag shopby-notification ${본인의 dockerhub ID}/notification
+docker image push ${본인의 dockerhub ID}/notification
+```
+
+2. docker 
+```shell
+# ssh 서버접속
+docker-compose -f docker-compose-cloud.yml up 
+
+docker exec -it kafka /bin/bsh
+
+# 토픽생성
+/bin/kafka-topics --create --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+# 토픽정보
+/bin/kafka-topics --describe --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+# procude
+/bin/kafka-console-producer --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+# consumer
+/bin/kafka-console-consumer --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+# 토픽 삭제
+/bin/kafka-topics --delete --topic BACKOFFICE-NOTIFICATIONS --bootstrap-server localhost:9092
+```
+
+3. 데모 페이지
+   1. http://133.186.247.62:8080/sse.html
+   1. http://133.186.247.62:8080/websocket.html
+   
+
+
+   
+
+
+
+
 
 

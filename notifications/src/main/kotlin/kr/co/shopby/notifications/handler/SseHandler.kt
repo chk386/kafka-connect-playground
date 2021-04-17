@@ -1,6 +1,7 @@
-package kr.co.shopby.notifications
+package kr.co.shopby.notifications.handler
 
 import kotlinx.coroutines.reactive.asFlow
+import kr.co.shopby.notifications.configuration.Topic
 import org.springframework.http.MediaType
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.stereotype.Component
@@ -21,19 +22,17 @@ class SseHandler(
       .bodyAndAwait(multicaster
         .asFlux()
         .filter { it.contains("all:") || it.startsWith(request.queryParam("id").orElseThrow()) }
-        .map {
-          it.replace("all:", "server -> ")
-        }
         .asFlow()
       )
   }
 
   suspend fun produce(request: ServerRequest): ServerResponse {
-    val msg = request.queryParam("msg").orElseThrow();
-
     return ServerResponse
       .ok()
-      .bodyAndAwait(producer.send(Topic.NOTIFICATIONS, msg)
+      .bodyAndAwait(
+        producer.send(
+          Topic.NOTIFICATIONS, request.queryParam("msg").orElseThrow()
+        )
         .map { it.recordMetadata().offset().toString() }
         .asFlow()
       )
