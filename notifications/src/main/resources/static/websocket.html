@@ -60,7 +60,8 @@
 
         // 메세지 전송
         $input.addEventListener("keypress", (e) => {
-            const msg = ($checked.checked) ? e.target.value : `${id}:${e.target.value}`;
+            const target = ($checked.checked) ? `all` : `me`;
+            const msg = `${id}:${target}:${e.target.value}`
 
             if (e.key === 'Enter') {
                 if(e.target.value === "/항복") {

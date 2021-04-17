@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.4.4"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-//    id("maven-publish")
 
     kotlin("jvm") version "1.4.31"
     kotlin("plugin.spring") version "1.4.31"
@@ -46,10 +45,8 @@ tasks.withType<Test> {
 }
 
 // https://docs.spring.io/spring-boot/docs/2.3.0.RELEASE/gradle-plugin/reference/html/#build-image
-tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootBuildImage>("bootBuildImage") {
-    imageName = "${group}/${version}"
-}
-
-tasks.getByName<Jar>("jar") {
-    enabled = true
-}
+// docker image tag shopby-notification:latest chk386/notification:latest
+// docker login
+// docker image push chk386/notification
+// https://hub.docker.com/repository/docker/chk386/notification
+// docker run -p 8080:8080 chk386/notification

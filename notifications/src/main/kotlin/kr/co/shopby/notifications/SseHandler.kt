@@ -21,16 +21,19 @@ class SseHandler(
       .bodyAndAwait(multicaster
         .asFlux()
         .filter { it.contains("all:") || it.startsWith(request.queryParam("id").orElseThrow()) }
+        .map {
+          it.replace("all:", "server -> ")
+        }
         .asFlow()
       )
   }
 
   suspend fun produce(request: ServerRequest): ServerResponse {
-    val queryParam = request.queryParam("msg").orElseThrow();
+    val msg = request.queryParam("msg").orElseThrow();
 
     return ServerResponse
       .ok()
-      .bodyAndAwait(producer.send(Topic.NOTIFICATIONS, queryParam)
+      .bodyAndAwait(producer.send(Topic.NOTIFICATIONS, msg)
         .map { it.recordMetadata().offset().toString() }
         .asFlow()
       )
