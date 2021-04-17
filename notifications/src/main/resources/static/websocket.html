@@ -27,6 +27,7 @@
         <input type="checkbox" id="all" checked/>
     </div>
 </div>
+
 </body>
 
 <script type="text/javascript" src="http://jsgetip.appspot.com"></script>
@@ -72,7 +73,11 @@
 
                 $input.value = ``;
             }
+
+            katalk.play();
         });
+
+        const katalk = new Audio("https://t1.daumcdn.net/cfile/tistory/99B972335F720D1502?original");
     })();
 </script>
 

@@ -1,4 +1,4 @@
-# github
+# github - 수정필요
 https://github.com/chk386/kafka-connect-playground/tree/main/notifications
 
 # 배경

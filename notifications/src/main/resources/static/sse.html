@@ -34,6 +34,7 @@
     const $input = document.querySelector("#input");
     const $msg = document.querySelector("#msg");
     const $checked = document.querySelector("#all");
+    const audio = new Audio("https://t1.daumcdn.net/cfile/tistory/99B972335F720D1502?original");
 
     (() => {
         const isChrome = navigator.userAgent.includes("Chrome");
@@ -52,6 +53,7 @@
         es.onmessage = (msg => {
             const color = msg.data.includes(id) ? "#000000" : "#ff0000";
             insertBeforeEnd(`<span style="color:${color};">${msg.data}</span><br/>`);
+            audio.play();
 
             if(msg.data === "패배") {
                 es.close();
@@ -74,7 +76,11 @@
                         $input.value = ``;
                     })
             }
+
+            katalk.play();
         });
+
+        const katalk = new Audio("https://t1.daumcdn.net/cfile/tistory/99B972335F720D1502?original");
     })();
 </script>
 
