@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Profile
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.messaging.support.GenericMessage
 import org.springframework.web.reactive.HandlerMapping
@@ -29,6 +30,7 @@ fun main(args: Array<String>) {
 class NotificationsApplication: WebFluxConfigurer {
 
   @Bean
+  @Profile("default")
   fun run(producer: ReactiveKafkaProducerTemplate<String, String>): ApplicationRunner {
     return ApplicationRunner {
       while (true) {

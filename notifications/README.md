@@ -223,7 +223,8 @@ docker image push ${본인의 dockerhub ID}/notification
 2. docker 
 ```shell
 # ssh 서버접속
-docker-compose -f docker-compose-cloud.yml up 
+docker-compose -f docker-compose-nhncloud.yml up
+docker run -d -e "SPRING_PROFILES_ACTIVE=cloud" -p 8080:8080 chk386/notification 
 
 docker exec -it kafka /bin/bsh
 
